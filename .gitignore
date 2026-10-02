@@ -1,0 +1,14 @@
+# Настройки IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Скомпилированные файлы
+out/
+target/
+*.class
+
+# Системные файлы
+.DS_Store
+Thumbs.db
