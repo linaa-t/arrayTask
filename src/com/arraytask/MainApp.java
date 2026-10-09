@@ -24,22 +24,18 @@ public class MainApp {
         FileReaderService fileReader = new FileReaderService();
         DataParser parser = new DataParser();
 
-        // Получаем наших "Одиночек" (Singletons)
         ArrayRepository repository = ArrayRepository.getInstance();
         Warehouse warehouse = Warehouse.getInstance();
 
-        // Подписываем Бухгалтера на уведомления от Директора
         warehouse.registerToRepository(repository);
 
         try {
             List<String> lines = fileReader.readLinesFromFile(INPUT_FILE_PATH);
             int nextId = 1;
 
-            // 1. Читаем файл и добавляем в Репозиторий
             for (String line : lines) {
                 try {
                     IntArrayEntity tempEntity = parser.createIntArray(line);
-                    // Создаем настоящий объект с ID
                     IntArrayEntity entity = new IntArrayEntity(nextId, tempEntity.getNumbers());
                     repository.add(entity); // Директор добавляет и сам звонит Бухгалтеру!
                     nextId++;
@@ -48,7 +44,6 @@ public class MainApp {
                 }
             }
 
-            // 2. Смотрим, что насчитал Бухгалтер
             LOGGER.info("=== Статистика в Warehouse ===");
             List<IntArrayEntity> allEntities = repository.findAll();
             for (IntArrayEntity entity : allEntities) {
@@ -56,7 +51,6 @@ public class MainApp {
                 LOGGER.info("ID=" + entity.getId() + ": " + stats.toString());
             }
 
-            // 3. Ищем массивы с суммой больше 5
             LOGGER.info("=== Поиск: сумма > 5 ===");
             BySumSpecification spec = new BySumSpecification(5, ComparisonType.GREATER);
             List<IntArrayEntity> found = repository.find(spec);
@@ -64,7 +58,7 @@ public class MainApp {
                 LOGGER.info("Найден массив ID=" + entity.getId());
             }
 
-            // 4. Сортируем по размеру массива
+            
             LOGGER.info("=== Сортировка по размеру ===");
             BySizeComparator sizeComparator = new BySizeComparator();
             List<IntArrayEntity> sorted = repository.sort(sizeComparator);
@@ -72,7 +66,7 @@ public class MainApp {
                 LOGGER.info("ID=" + entity.getId() + ", размер=" + entity.getSize());
             }
 
-            // 5. МЕНЯЕМ элемент и смотрим, как Бухгалтер пересчитает!
+           
             LOGGER.info("=== Меняем элемент: ID=1, индекс 0, значение 100 ===");
             repository.updateElement(1, 0, 100);
             ArrayStats newStats = warehouse.getStats(1);
